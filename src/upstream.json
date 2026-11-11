@@ -1,0 +1,20 @@
+{
+	"aube": {
+		"latest": {
+			"version": "2.10.0",
+			"commit": "0fee54efb41ef21afedf1e9458b2a681774c4ec9",
+			"platforms": {
+				"linux/amd64": {
+					"url": "https://github.com/aubepkg/aube/releases/download/v2.10.0/aube-v2.10.0-x86_64-unknown-linux-musl.tar.gz",
+					"size": 25602069,
+					"sha256": "51c88c48f784aa82ca6f9e2ced73aa9c51e5482a5be0e1670b88cc59769fe2eb"
+				},
+				"linux/arm64": {
+					"url": "https://github.com/aubepkg/aube/releases/download/v2.10.0/aube-v2.10.0-aarch64-unknown-linux-musl.tar.gz",
+					"size": 25320660,
+					"sha256": "7541658766b989fbb6560c34275b473d7fb96a5d97d21d639e5df7089c1573a5"
+				}
+			}
+		}
+	}
+}
