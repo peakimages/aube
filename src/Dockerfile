@@ -10,8 +10,6 @@ ARG BASE_IMAGE=alpine:3.24.4@sha256:f59abe656b692d901e184be3445e084786602108599d
 ARG LIBSTDCXX_VERSION=15.2.0-r5
 # https://pkgs.alpinelinux.org/package/v3.24/main/x86_64/libatomic
 ARG LIBATOMIC_VERSION=15.2.0-r5
-# https://github.com/anchore/syft/tree/v1.57.1/schema/json
-ARG SYFT_SCHEMA_VERSION=16.1.13
 # https://hub.docker.com/_/node/tags?name=22-alpine3.24
 ARG NODE_22=22.23.5-alpine3.24@sha256:1314fb30ec37592d5845e5a160d522c0e680972aa534549940b8d73bde88481a
 # https://hub.docker.com/_/node/tags?name=24-alpine3.24
@@ -28,13 +26,11 @@ ARG GIT_SHA
 FROM ${BASE_IMAGE} AS build
 
 ARG AUBE_VERSION
-ARG IMAGE_VERSION
-ARG SYFT_SCHEMA_VERSION
 ARG TARGETPLATFORM
 
-# curl and jq are only used during the build stage, so they are not pinned to a specific version
+# binutils, curl and jq are only used during the build stage, so they are not pinned to a specific version
 # hadolint ignore=DL3018
-RUN apk add --no-cache curl jq
+RUN apk add --no-cache binutils curl jq
 
 WORKDIR /src
 COPY --chmod=0644 upstream.json verify.sh ./
@@ -45,10 +41,9 @@ RUN jq --arg version "$AUBE_VERSION" --arg platform "$TARGETPLATFORM" '.aube[] |
 COPY --chmod=0644 rootfs.sh /src/
 RUN sh /src/rootfs.sh
 
-# A scratch image has no package database for the SBOM scanner to read, this syft JSON document takes its place
 COPY --chmod=0644 sbom.sh /src/
-RUN sh /src/sbom.sh "peakimages/aube:${AUBE_VERSION}-v${IMAGE_VERSION:?}" \
-        "generic|aube|${AUBE_VERSION}|MIT|$(jq -r .url /src/aube.json)|aubepkg:aube"
+RUN sh /src/sbom.sh peakimages/aube "PeakImages aube" \
+        "generic|aube|${AUBE_VERSION}|MIT|aubepkg:aube|/usr/local/bin/aube"
 
 FROM node:${NODE_22} AS node22-binary
 FROM node:${NODE_24} AS node24-binary
@@ -72,7 +67,6 @@ RUN apk add --no-cache --no-logfile libstdc++=${LIBSTDCXX_VERSION} \
     && install -d -o 65532 -g 65532 /home/nonroot
 
 COPY --from=build /rootfs/usr/local/bin/ /usr/local/bin/
-COPY --from=build /rootfs/var/lib/db/sbom/ /var/lib/db/sbom/
 
 LABEL org.opencontainers.image.title="aube" \
     org.opencontainers.image.description="Minimal aube Docker image for build stages, with or without Node.js." \

@@ -111,6 +111,30 @@ The Node.js variations set these defaults, override them with `ENV` in your stag
 | `AUBE_RUNTIME_ON_FAIL`                 | `error` | A project that pins a Node.js version the image does not have fails instead of downloading it           |
 | `AUBE_MANAGE_PACKAGE_MANAGER_VERSIONS` | `false` | A `packageManager` pin on another aube is ignored instead of downloading it and running it in its place |
 
+## Attestations
+
+Every image carries an SBOM and a provenance attestation.
+
+The SBOM lists the packages of the image:
+
+```sh
+docker buildx imagetools inspect peakimages/aube:latest-node24 --format '{{ json .SBOM }}'
+```
+
+The provenance records how the image was built:
+
+```sh
+docker buildx imagetools inspect peakimages/aube:latest-node24 --format '{{ json .Provenance }}'
+```
+
+A scanner lists the same packages, Trivy all but aube and Node.js:
+
+```sh
+syft peakimages/aube:latest-node24
+grype peakimages/aube:latest-node24
+trivy image peakimages/aube:latest-node24
+```
+
 ## Releases
 
 Every aube release becomes a new version of the image. A check for new aube releases runs twice a day.
