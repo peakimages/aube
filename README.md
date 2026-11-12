@@ -61,7 +61,6 @@ FROM peakimages/aube:2.10.0-v0.1.0 AS aube
 
 FROM node:24-alpine AS build
 COPY --from=aube /usr/local/bin/ /usr/local/bin/
-ENV CI=true AUBE_RUNTIME_ON_FAIL=error AUBE_MANAGE_PACKAGE_MANAGER_VERSIONS=false
 WORKDIR /app
 COPY package.json aube-lock.yaml ./
 RUN aube ci
@@ -107,7 +106,8 @@ The Node.js flavors set these defaults, override them with `ENV` in your stage. 
 
 | Variable                               | Default | Meaning                                                                                                 |
 | -------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------- |
-| `CI`                                   | `true`  | Packages are installed into `node_modules` of the project instead of linked to a store outside it       |
+| `AUBE_ENABLE_GLOBAL_VIRTUAL_STORE`     | `false` | Packages are installed into `node_modules` of the project instead of linked to a store outside it       |
+| `AUBE_UPDATE_NOTIFIER`                 | `false` | aube does not look for a newer version after an install, the tag of the image pins it                   |
 | `AUBE_RUNTIME_ON_FAIL`                 | `error` | A project that pins a Node.js version the image does not have fails instead of downloading it           |
 | `AUBE_MANAGE_PACKAGE_MANAGER_VERSIONS` | `false` | A `packageManager` pin on another aube is ignored instead of downloading it and running it in its place |
 

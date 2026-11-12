@@ -88,7 +88,8 @@ LABEL org.opencontainers.image.title="aube" \
 
 # https://aube.sh/settings/
 ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
-    CI=true \
+    AUBE_ENABLE_GLOBAL_VIRTUAL_STORE=false \
+    AUBE_UPDATE_NOTIFIER=false \
     AUBE_RUNTIME_ON_FAIL=error \
     AUBE_MANAGE_PACKAGE_MANAGER_VERSIONS=false
 
