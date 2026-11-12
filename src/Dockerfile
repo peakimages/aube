@@ -6,6 +6,7 @@ ARG AUBE_VERSION=2.10.0
 # Dependencies
 # https://hub.docker.com/_/alpine/tags?name=3.24.4
 ARG BASE_IMAGE=alpine:3.24.4@sha256:f59abe656b692d901e184be3445e084786602108599d2a51d229c0f5a48c71bf
+ARG DISTRO=alpine-3.24
 # https://pkgs.alpinelinux.org/package/v3.24/main/x86_64/libstdc++
 ARG LIBSTDCXX_VERSION=15.2.0-r5
 # https://pkgs.alpinelinux.org/package/v3.24/main/x86_64/libatomic
@@ -51,13 +52,11 @@ FROM node:${NODE_26} AS node26-binary
 
 FROM ${BASE_IMAGE} AS node
 
+ARG DISTRO
 ARG AUBE_VERSION
 ARG IMAGE_VERSION
 ARG BASE_IMAGE
 ARG LIBSTDCXX_VERSION
-ARG NODE_22
-ARG NODE_24
-ARG NODE_26
 ARG CREATED
 ARG GIT_SHA
 
@@ -70,17 +69,22 @@ COPY --from=build /rootfs/usr/local/bin/ /usr/local/bin/
 
 LABEL org.opencontainers.image.title="aube" \
     org.opencontainers.image.description="Minimal aube Docker image for build stages, with or without Node.js." \
-    org.opencontainers.image.created="${CREATED}" \
     org.opencontainers.image.revision="${GIT_SHA}" \
-    org.opencontainers.image.licenses="MIT AND Apache-2.0 AND BSD-2-Clause AND Zlib AND MPL-2.0 AND GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-or-later AND AGPL-3.0-or-later" \
+    org.opencontainers.image.created="${CREATED}" \
+    org.opencontainers.image.licenses="AGPL-3.0-or-later AND MIT" \
     org.opencontainers.image.authors="PeakImages" \
     org.opencontainers.image.vendor="PeakImages" \
     org.opencontainers.image.url="https://hub.docker.com/r/peakimages/aube" \
-    org.opencontainers.image.source="https://github.com/peakimages/aube" \
     org.opencontainers.image.documentation="https://github.com/peakimages/aube#readme" \
-    org.opencontainers.image.base.name="${BASE_IMAGE}" \
-    dev.peakimages.aube.version="${AUBE_VERSION}" \
-    dev.peakimages.image.version="${IMAGE_VERSION}"
+    org.opencontainers.image.source="https://github.com/peakimages/aube" \
+    org.opencontainers.image.base.name="docker.io/library/${BASE_IMAGE%%@*}" \
+    org.opencontainers.image.base.digest="${BASE_IMAGE##*@}" \
+    dev.peakimages.image.version="${IMAGE_VERSION}" \
+    dev.peakimages.image.upstream.version="${AUBE_VERSION}" \
+    dev.peakimages.image.distro="${DISTRO}" \
+    dev.peakimages.image.variant="builder" \
+    dev.peakimages.image.shell="busybox" \
+    dev.peakimages.image.package-manager="apk"
 
 # https://aube.sh/settings/
 ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
@@ -95,12 +99,12 @@ CMD ["aube", "--help"]
 FROM node AS node22
 COPY --from=node22-binary /usr/local/bin/node /usr/local/bin/node
 LABEL org.opencontainers.image.version="${AUBE_VERSION}-node22-v${IMAGE_VERSION}" \
-    dev.peakimages.node.version="${NODE_22%%-*}"
+    dev.peakimages.image.flavor="node22"
 
 FROM node AS node24
 COPY --from=node24-binary /usr/local/bin/node /usr/local/bin/node
 LABEL org.opencontainers.image.version="${AUBE_VERSION}-node24-v${IMAGE_VERSION}" \
-    dev.peakimages.node.version="${NODE_24%%-*}"
+    dev.peakimages.image.flavor="node24"
 
 FROM node AS node26
 ARG LIBATOMIC_VERSION
@@ -108,7 +112,7 @@ COPY --from=node26-binary /usr/local/bin/node /usr/local/bin/node
 # Node.js 26 links against libatomic on amd64
 RUN apk add --no-cache --no-logfile libatomic=${LIBATOMIC_VERSION}
 LABEL org.opencontainers.image.version="${AUBE_VERSION}-node26-v${IMAGE_VERSION}" \
-    dev.peakimages.node.version="${NODE_26%%-*}"
+    dev.peakimages.image.flavor="node26"
 
 FROM scratch AS default
 
@@ -122,17 +126,23 @@ COPY --from=build /rootfs/ /
 LABEL org.opencontainers.image.title="aube" \
     org.opencontainers.image.description="Minimal aube Docker image for build stages, with or without Node.js." \
     org.opencontainers.image.version="${AUBE_VERSION}-v${IMAGE_VERSION}" \
-    org.opencontainers.image.created="${CREATED}" \
     org.opencontainers.image.revision="${GIT_SHA}" \
-    org.opencontainers.image.licenses="MIT AND AGPL-3.0-or-later" \
+    org.opencontainers.image.created="${CREATED}" \
+    org.opencontainers.image.licenses="AGPL-3.0-or-later AND MIT" \
     org.opencontainers.image.authors="PeakImages" \
     org.opencontainers.image.vendor="PeakImages" \
     org.opencontainers.image.url="https://hub.docker.com/r/peakimages/aube" \
-    org.opencontainers.image.source="https://github.com/peakimages/aube" \
     org.opencontainers.image.documentation="https://github.com/peakimages/aube#readme" \
-    org.opencontainers.image.base.name="scratch" \
-    dev.peakimages.aube.version="${AUBE_VERSION}" \
-    dev.peakimages.image.version="${IMAGE_VERSION}"
+    org.opencontainers.image.source="https://github.com/peakimages/aube" \
+    org.opencontainers.image.base.name="" \
+    org.opencontainers.image.base.digest="" \
+    dev.peakimages.image.version="${IMAGE_VERSION}" \
+    dev.peakimages.image.upstream.version="${AUBE_VERSION}" \
+    dev.peakimages.image.distro="" \
+    dev.peakimages.image.variant="builder" \
+    dev.peakimages.image.flavor="" \
+    dev.peakimages.image.shell="" \
+    dev.peakimages.image.package-manager=""
 
 ENV PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
