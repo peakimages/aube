@@ -107,11 +107,15 @@ COPY --from=node24-binary /usr/local/bin/node /usr/local/bin/node
 LABEL org.opencontainers.image.version="${AUBE_VERSION}-node24-v${IMAGE_VERSION}" \
     dev.peakimages.image.flavor="node24"
 
-FROM node AS node26
-ARG LIBATOMIC_VERSION
-COPY --from=node26-binary /usr/local/bin/node /usr/local/bin/node
+FROM node AS arm64-node26
+
 # Node.js 26 links against libatomic on amd64
+FROM node AS amd64-node26
+ARG LIBATOMIC_VERSION
 RUN apk add --no-cache --no-logfile libatomic=${LIBATOMIC_VERSION}
+
+FROM ${TARGETARCH}-node26 AS node26
+COPY --from=node26-binary /usr/local/bin/node /usr/local/bin/node
 LABEL org.opencontainers.image.version="${AUBE_VERSION}-node26-v${IMAGE_VERSION}" \
     dev.peakimages.image.flavor="node26"
 
