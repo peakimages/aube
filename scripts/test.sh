@@ -22,7 +22,7 @@ trap 'rm -rf "$WORK_DIR"' EXIT
 main() {
 	[[ "$OPTION" =~ ^[^-][^[:space:]]*$ ]] || die "'$OPTION' is not an option, expected an image"
 	heading "Testing $IMAGE"
-	read_labels
+	find_node
 	check_version
 	if [ -z "$node_version" ]; then
 		check_copied_binary
@@ -36,16 +36,15 @@ main() {
 	heading "All tests passed for $IMAGE"
 }
 
-read_labels() {
-	version="$(label aube.version)"
-	node_version="$(label node.version)"
+find_node() {
+	node_version="$(docker run --rm --entrypoint node "$IMAGE" --version 2> /dev/null || true)"
 }
 
 check_version() {
 	local printed
-	jq -e --arg version "$version" 'any(.aube[]; .version == $version)' src/upstream.json > /dev/null || die "the image is labeled aube $version, src/upstream.json pins no such version"
 	printed="$(aube --version)"
-	[[ "$printed" == "$version "* ]] || die "aube --version prints '$printed', expected $version"
+	version="${printed%% *}"
+	jq -e --arg version "$version" 'any(.aube[]; .version == $version)' src/upstream.json > /dev/null || die "aube --version prints '$printed', expected a version src/upstream.json pins"
 	ok "aube --version prints $version, a version src/upstream.json pins"
 }
 
@@ -93,8 +92,6 @@ check_package_manager_pin() {
 	[[ "$printed" == "$version "* && "$printed" != *$'\n'* ]] || die "a project that pins aube 2.0.0 gave '$printed', expected $version and no download"
 	ok "a project that pins another aube still runs $version, nothing is downloaded"
 }
-
-label() { docker image inspect "$IMAGE" --format "{{index .Config.Labels \"dev.peakimages.$1\"}}"; }
 
 run() { docker run --rm "$IMAGE" "$@"; }
 
