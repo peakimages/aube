@@ -1,6 +1,6 @@
 # Releases
 
-Every release is tagged `v<aube version>-v<image version>`, such as `v2.10.0-v0.1.0`. The Node.js variations are published as `2.10.0-node24-v0.1.0`, the git tag and the GitHub release are those of the default variation.
+Every release is tagged `v<aube version>-v<image version>`, such as `v2.10.0-v0.1.0`. The Node.js flavors are published as `2.10.0-node24-v0.1.0`, the git tag and the GitHub release are those of the default image.
 
 > [!IMPORTANT]
 > A push that changes `release.json` or `src/upstream.json` releases the versions they set, unless they are released already. Run `scripts/plan-version.sh` first to see what a push releases.
@@ -150,7 +150,7 @@ docker buildx imagetools inspect node:24.22.3-alpine3.24 --format '{{.Manifest.D
 
 ## Pull requests
 
-The pull request workflow builds every pull request and publishes the images of the line `latest` of a pull request from a branch of this repository as `ghcr.io/peakimages/aube:pr-<number>`, a Node.js variation as `pr-<number>-node24`. Its version is `<base>-pr.<number>`:
+The pull request workflow builds every pull request and publishes the images of the line `latest` of a pull request from a branch of this repository as `ghcr.io/peakimages/aube:pr-<number>`, a Node.js flavor as `pr-<number>-node24`. Its version is `<base>-pr.<number>`:
 
 - Into `next`: `1.4.0-beta.1-pr.1234` after `1.4.0-beta.1`, or `1.5.0-alpha.0-pr.1234` before the first alpha of 1.5.0
 - Into `main`: `1.3.4-pr.1234`
@@ -168,4 +168,4 @@ The pull request workflow builds every pull request and publishes the images of 
 | `preview`                       | the newest prerelease of the lowest version in prerelease above `latest`, else `latest` |
 | `pr-123`                        | the default image of the newest push to an open pull request, on ghcr.io only           |
 
-A Node.js variation has the same tags with its name after the aube version, `2.10.0-node24-v0.1.0`, `2.10-node24`, `latest-node24` and `preview-node24`.
+A Node.js flavor has the same tags with its name after the aube version, `2.10.0-node24-v0.1.0`, `2.10-node24`, `latest-node24` and `preview-node24`.

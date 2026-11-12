@@ -19,8 +19,8 @@ aube ships as one static binary and has no official image. Bringing it into a bu
 
 - ✅ Verified Source: The signature of an aube release is checked when it is pinned, size and SHA-256 of the archive before each build
 - ✅ One Line: `COPY --from` puts the static binary into any build stage, on Alpine, Debian or any other base
-- ✅ Unprivileged User: The Node.js variations run as root like the official `node` image and bring the user `65532` for a build without root
-- ✅ One Package Manager: The Node.js variations ship Node.js and aube, without npm, yarn and corepack
+- ✅ Unprivileged User: The Node.js flavors run as root like the official `node` image and bring the user `65532` for a build without root
+- ✅ One Package Manager: The Node.js flavors ship Node.js and aube, without npm, yarn and corepack
 - ✅ No Surprise Downloads: A project that pins another Node.js fails the build, a pin on another aube is ignored
 - ✅ Portable `node_modules`: Packages are installed into the project, so a later stage can copy them
 - ✅ Modern Architecture: OCI labels, reproducible builds, provenance and SBOM attestations
@@ -35,7 +35,7 @@ aube reads the lockfile a project already has, `aube-lock.yaml`, `pnpm-lock.yaml
 > [!NOTE]
 > The layers of the image are compressed with zstd, pulling it needs Docker Engine 23.0 or later.
 
-### Node.js Variation
+### Node.js Flavor
 
 A build stage with Node.js and aube:
 
@@ -54,7 +54,7 @@ The stage runs as root in `/app`, like a stage on the official `node` image.
 
 ### aube for Other Images
 
-The default variation holds the static binary, any build stage with Node.js can copy it:
+The default image holds the static binary, any build stage with Node.js can copy it:
 
 ```dockerfile
 FROM peakimages/aube:2.10.0-v0.1.0 AS aube
@@ -71,18 +71,18 @@ Copy the directory and not the three files, `aubr` and `aubx` are links to `aube
 
 ## Available Image Variations
 
-All tags follow this pattern, the default variation leaves out `-{{variation}}`:
+All tags follow this pattern, the default leaves out `-{{flavor}}`:
 
 ```sh
-peakimages/aube:{{aube-version}}-{{variation}}-v{{image-version}}
+peakimages/aube:{{aube-version}}-{{flavor}}-v{{image-version}}
 ```
 
-| Variation | Best For                                          | Example                                |
-| --------- | ------------------------------------------------- | -------------------------------------- |
-| default   | Copying aube into a build stage that has Node.js  | `peakimages/aube:2.10.0-v0.1.0`        |
-| `node22`  | A build stage on Node.js 22, LTS until 2027-04-30 | `peakimages/aube:2.10.0-node22-v0.1.0` |
-| `node24`  | A build stage on Node.js 24, LTS until 2028-04-30 | `peakimages/aube:2.10.0-node24-v0.1.0` |
-| `node26`  | A build stage on Node.js 26, LTS until 2029-04-30 | `peakimages/aube:2.10.0-node26-v0.1.0` |
+| Flavor   | Variant   | Best For                                          | Example                                |
+| -------- | --------- | ------------------------------------------------- | -------------------------------------- |
+| default  | `builder` | Copying aube into a build stage that has Node.js  | `peakimages/aube:2.10.0-v0.1.0`        |
+| `node22` | `builder` | A build stage on Node.js 22, LTS until 2027-04-30 | `peakimages/aube:2.10.0-node22-v0.1.0` |
+| `node24` | `builder` | A build stage on Node.js 24, LTS until 2028-04-30 | `peakimages/aube:2.10.0-node24-v0.1.0` |
+| `node26` | `builder` | A build stage on Node.js 26, LTS until 2029-04-30 | `peakimages/aube:2.10.0-node26-v0.1.0` |
 
 ### Tags
 
@@ -92,7 +92,7 @@ peakimages/aube:{{aube-version}}-{{variation}}-v{{image-version}}
 | `2.10.0`, `2.10`, `2`                              | Newest release of that aube patch, minor or major version                     |
 | `latest`                                           | Newest release                                                                |
 | `preview`                                          | Newest prerelease, like `2.10.0-v0.2.0-beta.1`, until its release replaces it |
-| `2.10.0-node24`, `latest-node24`, `preview-node24` | The same for a variation                                                      |
+| `2.10.0-node24`, `latest-node24`, `preview-node24` | The same for a flavor                                                         |
 
 ### Registries
 
@@ -103,7 +103,7 @@ peakimages/aube:{{aube-version}}-{{variation}}-v{{image-version}}
 
 ## Configuration
 
-The Node.js variations set these defaults, override them with `ENV` in your stage. `COPY --from` copies no environment, so set them next to the `COPY` of the default variation.
+The Node.js flavors set these defaults, override them with `ENV` in your stage. `COPY --from` copies no environment, so set them next to the `COPY` of the default image.
 
 | Variable                               | Default | Meaning                                                                                                 |
 | -------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------- |

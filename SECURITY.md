@@ -8,8 +8,8 @@ Report a vulnerability to the project that maintains the affected code:
 
 - **The image** is built in this repository: the Dockerfile and its build settings, the root filesystem and the workflows that test and publish it. Report it here, see [Reporting a Vulnerability](#reporting-a-vulnerability).
 - **aube** is maintained at [aubepkg/aube](https://github.com/aubepkg/aube). Report it there, see its [security policy](https://github.com/aubepkg/aube/security/policy). Every aube release becomes a new image, usually within a day.
-- **Node.js** in the `node22`, `node24` and `node26` variations is the binary of the [official Node.js image](https://hub.docker.com/_/node), pinned by version and digest. Report it to the [Node.js project](https://github.com/nodejs/node/security/policy), a Node.js security release reaches the image with its next release.
-- **Alpine packages** in those variations come from the pinned base image and a pinned `libstdc++` and `libatomic`. Report it to Alpine or the upstream project, the fix reaches the image with its next release.
+- **Node.js** in the `node22`, `node24` and `node26` flavors is the binary of the [official Node.js image](https://hub.docker.com/_/node), pinned by version and digest. Report it to the [Node.js project](https://github.com/nodejs/node/security/policy), a Node.js security release reaches the image with its next release.
+- **Alpine packages** in those flavors come from the pinned base image and a pinned `libstdc++` and `libatomic`. Report it to Alpine or the upstream project, the fix reaches the image with its next release.
 
 ## Support Policy
 
@@ -20,7 +20,7 @@ Below you can find the support status for different versions of the image. The i
 | **1.x** | :white_check_mark: | Unreleased         |
 | **0.x** | :white_check_mark: | Active Development |
 
-Immutable tags such as `2.10.0-v0.1.0` and `2.10.0-node24-v0.1.0` are never rebuilt. A fix ships as a new image version, and the floating tags `2.10.0`, `2.10`, `2` and `latest`, and `2.10.0-node24` to `latest-node24` for a variation, move to it. Builds that pin an immutable tag or a digest receive fixes by moving to the newer one.
+Immutable tags such as `2.10.0-v0.1.0` and `2.10.0-node24-v0.1.0` are never rebuilt. A fix ships as a new image version, and the floating tags `2.10.0`, `2.10`, `2` and `latest`, and `2.10.0-node24` to `latest-node24` for a flavor, move to it. Builds that pin an immutable tag or a digest receive fixes by moving to the newer one.
 
 ## Reporting a Vulnerability
 

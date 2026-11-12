@@ -76,18 +76,18 @@ jobs:
       - name: Push the images of the pull request
         env:
           TAG: pr-${{ github.event.pull_request.number }}
-          VARIANTS: default,node22,node24,node26
+          FLAVORS: default,node22,node24,node26
         run: |
-          for variant in ${VARIANTS//,/ }; do
+          for flavor in ${FLAVORS//,/ }; do
             sources=()
-            for index in "$RUNNER_TEMP/images/image-latest-$variant-"*/index.json; do
+            for index in "$RUNNER_TEMP/images/image-latest-$flavor-"*/index.json; do
               sources+=("oci-layout://${index%/index.json}@$(jq -r '.manifests[0].digest' "$index")")
             done
             labels="$(docker buildx imagetools inspect "${sources[0]}" --format '{{ json .Image.Config.Labels }}' \
               | jq -r 'to_entries[] | "--annotation=index:\(.key)=\(.value)"')"
             mapfile -t annotations <<< "$labels"
             tag="$TAG"
-            [ "$variant" = default ] || tag="$TAG-$variant"
+            [ "$flavor" = default ] || tag="$TAG-$flavor"
             docker buildx imagetools create "${annotations[@]}" --tag "ghcr.io/peakimages/aube:$tag" "${sources[@]}"
           done
 
@@ -114,15 +114,15 @@ jobs:
       - name: Compare the size of every variation with the latest release
         env:
           TAG: pr-${{ github.event.pull_request.number }}
-          VARIANTS: default,node22,node24,node26
+          FLAVORS: default,node22,node24,node26
         run: |
-          for variant in ${VARIANTS//,/ }; do
+          for flavor in ${FLAVORS//,/ }; do
             suffix=""
-            [ "$variant" = default ] || suffix="-$variant"
-            mkdir "$RUNNER_TEMP/$variant"
-            mv "$RUNNER_TEMP"/images/image-latest-"$variant"-* "$RUNNER_TEMP/$variant/"
-            IMAGE_NAME="$TAG$suffix" OUTPUT_FILE="$RUNNER_TEMP/size-$variant.md" scripts/size.sh "$RUNNER_TEMP/$variant" "peakimages/aube:latest$suffix"
-            cat "$RUNNER_TEMP/size-$variant.md" >> "$RUNNER_TEMP/size.md"
+            [ "$flavor" = default ] || suffix="-$flavor"
+            mkdir "$RUNNER_TEMP/$flavor"
+            mv "$RUNNER_TEMP"/images/image-latest-"$flavor"-* "$RUNNER_TEMP/$flavor/"
+            IMAGE_NAME="$TAG$suffix" OUTPUT_FILE="$RUNNER_TEMP/size-$flavor.md" scripts/size.sh "$RUNNER_TEMP/$flavor" "peakimages/aube:latest$suffix"
+            cat "$RUNNER_TEMP/size-$flavor.md" >> "$RUNNER_TEMP/size.md"
           done
           cat "$RUNNER_TEMP/size.md" >> "$GITHUB_STEP_SUMMARY"
 

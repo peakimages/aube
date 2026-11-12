@@ -50,7 +50,7 @@ jobs:
           printf 'image=%s\nlines=%s\n' "$image" "$lines" >> "$GITHUB_OUTPUT"
 
   build:
-    name: Build image (${{ matrix.line.name }}, ${{ matrix.variant }}, ${{ matrix.platform }})
+    name: Build image (${{ matrix.line.name }}, ${{ matrix.flavor }}, ${{ matrix.platform }})
     needs: plan
     permissions:
       contents: read
@@ -59,7 +59,7 @@ jobs:
     strategy:
       matrix:
         line: ${{ fromJSON(needs.plan.outputs.lines) }}
-        variant: [default, node22, node24, node26]
+        flavor: [default, node22, node24, node26]
         platform: [linux/amd64, linux/arm64]
         include:
           - platform: linux/amd64
@@ -91,7 +91,7 @@ jobs:
         uses: docker/build-push-action@v7.4.0
         with:
           context: src
-          target: ${{ matrix.variant }}
+          target: ${{ matrix.flavor }}
           platforms: ${{ matrix.platform }}
           tags: peakimages/aube:test
           outputs: type=oci,dest=${{ runner.temp }}/image,tar=false,rewrite-timestamp=true,compression=zstd,compression-level=11,force-compression=true
@@ -107,7 +107,7 @@ jobs:
       - name: Upload the image
         uses: actions/upload-artifact@v7.0.2
         with:
-          name: image-${{ matrix.line.name }}-${{ matrix.variant }}-${{ matrix.arch }}
+          name: image-${{ matrix.line.name }}-${{ matrix.flavor }}-${{ matrix.arch }}
           path: ${{ runner.temp }}/image
           if-no-files-found: error
           retention-days: 1
