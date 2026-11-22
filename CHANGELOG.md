@@ -1,12 +1,18 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. aube version bumps are not listed, every release tag names the aube version it ships.
+All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-## [v0.1.0] - 2026-11-12
+## [v2.10.1-v0.1.0] - 2026-11-17
+
+### Changed
+
+- aube from v2.10.0 to v2.10.1, see its [release notes](https://github.com/aubepkg/aube/releases/tag/v2.10.1)
+
+## [v2.10.0-v0.1.0] - 2026-11-12
 
 ### Added
 
