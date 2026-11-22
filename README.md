@@ -139,7 +139,7 @@ trivy image peakimages/aube:latest-node24
 
 Every aube release becomes a new version of the image. A check for new aube releases runs twice a day.
 
-The image version follows semantic versioning independently of aube. Changes to the image are listed in [CHANGELOG.md](CHANGELOG.md).
+The image version follows semantic versioning independently of aube, a tag is `<aube version>-v<image version>`, such as `2.10.1-v0.1.0`. Every release is listed in [CHANGELOG.md](CHANGELOG.md).
 
 ## Trademarks
 

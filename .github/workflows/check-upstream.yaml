@@ -62,7 +62,7 @@ jobs:
       - name: Check GitHub and pin a new aube release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: scripts/check-upstream.sh
+        run: BODY_FILE="$RUNNER_TEMP/body.md" scripts/check-upstream.sh
 
       - name: Open a pull request for the new release
         env:
@@ -73,7 +73,6 @@ jobs:
           pin() { jq -r ".aube.latest.$1"; }
           current="$(git show HEAD:src/upstream.json | pin version)"
           version="$(pin version < src/upstream.json)"
-          commit="$(pin commit < src/upstream.json)"
           branch="feat/aube-v$version"
           [ "$BASE" = main ] || branch="$branch-${BASE//\//-}"
           title="feat(release): bump aube version from v$current to v$version"
@@ -81,12 +80,7 @@ jobs:
             echo "a pull request from $branch is open already"
             exit 0
           fi
-          cat > "$RUNNER_TEMP/body.md" <<BODY
-          Updates aube to v$version, see its [release notes](https://github.com/aubepkg/aube/releases/tag/v$version) and its [release commit](https://github.com/aubepkg/aube/commit/$commit).
-
-          ## Changes
-
-          - Bump aube version from v$current to v$version
+          cat >> "$RUNNER_TEMP/body.md" <<BODY
 
           > [!IMPORTANT]
           > Squash merge this PR to keep the commit history clean.

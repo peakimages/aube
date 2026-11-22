@@ -7,6 +7,8 @@ IDENTITY="^https://github\\.com/$REPOSITORY/\\.github/workflows/[^/@]+@refs/head
 ISSUER=https://token.actions.githubusercontent.com
 # https://github.com/sigstore/cosign/releases/tag/v3.1.4
 COSIGN=ghcr.io/sigstore/cosign/cosign:v3.1.4
+BODY_FILE="${BODY_FILE:-/dev/null}"
+VERSION_FILE=release.json
 WORK_DIR="$(mktemp -d)"
 
 BOLD=$'\033[1m' BLUE=$'\033[34m' GREEN=$'\033[32m' RED=$'\033[31m' RESET=$'\033[0m'
@@ -31,6 +33,8 @@ main() {
 	write_upstream_json
 	verify_archives
 	update_dockerfile
+	write_notes
+	update_changelog
 }
 
 read_newest_release() {
@@ -97,6 +101,33 @@ update_dockerfile() {
 	sed -E "s|^ARG AUBE_VERSION=.*|ARG AUBE_VERSION=$version|" src/Dockerfile > "$WORK_DIR/Dockerfile"
 	cp "$WORK_DIR/Dockerfile" src/Dockerfile
 	ok "src/Dockerfile sets AUBE_VERSION $BOLD$version$RESET"
+}
+
+write_notes() {
+	local notes="https://github.com/aubepkg/aube/releases/tag/v$version"
+	printf -- '### Changed\n\n- aube from v%s to v%s, see its [release notes](%s)\n' "$pinned" "$version" "$notes" > "$WORK_DIR/notes.md"
+	printf -- '## Changes\n\n- Bump aube version from v%s to v%s, see its [release notes](%s)\n' "$pinned" "$version" "$notes" > "$BODY_FILE"
+}
+
+update_changelog() {
+	local branch tag
+	branch="$(git branch --show-current)"
+	if [[ "$branch" =~ ^(next|release/v[0-9]+\.[0-9]+)$ ]]; then
+		info "$branch publishes prereleases only, the next one ships aube $version"
+		return
+	fi
+	tag="v$version-v$(jq -r .stable.image "$VERSION_FILE")"
+	awk -v heading="## [$tag] - $(date +%Y-%m-%d)" -v notes="$WORK_DIR/notes.md" '
+		/^## \[v/ && !added {
+			print heading "\n"
+			while ((getline line < notes) > 0) print line
+			print ""
+			added = 1
+		}
+		1
+	' CHANGELOG.md > "$WORK_DIR/CHANGELOG.md"
+	cp "$WORK_DIR/CHANGELOG.md" CHANGELOG.md
+	ok "CHANGELOG.md lists aube $version under $BOLD## [$tag]$RESET"
 }
 
 fetch() {
