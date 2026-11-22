@@ -71,11 +71,10 @@ jobs:
         run: |
           git diff --quiet && exit 0
           pin() { jq -r ".aube.latest.$1"; }
-          current="$(git show HEAD:src/upstream.json | pin version)"
           version="$(pin version < src/upstream.json)"
           branch="feat/aube-v$version"
           [ "$BASE" = main ] || branch="$branch-${BASE//\//-}"
-          title="feat(release): bump aube version from v$current to v$version"
+          title="feat(release): bump aube version to v$version"
           if [ -n "$(gh pr list --head "$branch" --json number --jq '.[0].number')" ]; then
             echo "a pull request from $branch is open already"
             exit 0
@@ -93,6 +92,6 @@ jobs:
           git push --quiet --set-upstream origin "$branch"
           new_pr="$(gh pr create --base "$BASE" --head "$branch" --title "$title" --label bot/upstream --body-file "$RUNNER_TEMP/body.md")"
           gh workflow run build.yaml --ref "$branch"
-          for open_pr in $(gh pr list --label bot/upstream --base "$BASE" --json url,title | jq -r --arg from "from v$current to" '.[] | select(.title | contains($from)) | .url'); do
+          for open_pr in $(gh pr list --label bot/upstream --base "$BASE" --json url --jq '.[].url'); do
             [ "$open_pr" = "$new_pr" ] || gh pr close "$open_pr" --delete-branch --comment "Superseded by $new_pr"
           done
