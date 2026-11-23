@@ -24,7 +24,7 @@ aube ships as one static binary and has no official image. Bringing it into a bu
 - ✅ No Surprise Downloads: A project that pins another Node.js fails the build, a pin on another aube is ignored
 - ✅ Portable `node_modules`: Packages are installed into the project, so a later stage can copy them
 - ✅ Modern Architecture: OCI labels, reproducible builds, provenance and SBOM attestations
-- ✅ Always Current: GitHub is checked twice a day and new aube releases become new images
+- ✅ Always Current: GitHub is checked every two hours and new aube releases become new images
 - ✅ Multi-Architecture: Builds for `linux/amd64` and `linux/arm64`, the Linux platforms aube is released for
 - ✅ Tested: Every release is tested on both platforms before it is published
 
@@ -137,7 +137,7 @@ trivy image peakimages/aube:latest-node24
 
 ## Releases
 
-Every aube release becomes a new version of the image. A check for new aube releases runs twice a day.
+Every aube release becomes a new version of the image. A check for new aube releases runs every two hours.
 
 The image version follows semantic versioning independently of aube, a tag is `<aube version>-v<image version>`, such as `2.10.1-v0.1.0`. Every release is listed in [CHANGELOG.md](CHANGELOG.md).
 
