@@ -43,7 +43,6 @@ read_newest_release() {
 }
 
 compare_with_pinned() {
-	local pinned
 	pinned="$(jq -r '.aube.latest.version // empty' src/upstream.json)"
 	if [ "$version" = "$pinned" ]; then
 		ok "aube $BOLD$pinned$RESET is pinned and the newest release on GitHub"
