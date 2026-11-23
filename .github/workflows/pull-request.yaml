@@ -2,19 +2,13 @@ name: Pull request
 
 on:
   pull_request:
-  workflow_dispatch:
-    inputs:
-      pull-request:
-        description: The number of the pull request whose branch the run is on
-        type: number
-        required: true
 
 permissions: {}
 
 cache-mode: none
 
 concurrency:
-  group: pull-request-${{ github.event.pull_request.number || inputs.pull-request }}
+  group: pull-request-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 defaults:
@@ -56,13 +50,11 @@ jobs:
     permissions:
       contents: read
     uses: $/.github/workflows/build.yaml
-    with:
-      pull-request: ${{ github.event.pull_request.number || inputs.pull-request }}
 
   publish:
     name: Publish image
     needs: build
-    if: ${{ (github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository) && github.actor != 'dependabot[bot]' }}
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]' }}
     permissions:
       packages: write # push the image of the pull request to ghcr.io
     runs-on: ubuntu-26.04 # https://github.com/actions/runner-images
@@ -83,7 +75,7 @@ jobs:
 
       - name: Push the images of the pull request
         env:
-          TAG: pr-${{ github.event.pull_request.number || inputs.pull-request }}
+          TAG: pr-${{ github.event.pull_request.number }}
           FLAVORS: default,node22,node24,node26
         run: |
           for flavor in ${FLAVORS//,/ }; do
@@ -121,7 +113,7 @@ jobs:
 
       - name: Compare the size of every variation with the latest release
         env:
-          TAG: pr-${{ github.event.pull_request.number || inputs.pull-request }}
+          TAG: pr-${{ github.event.pull_request.number }}
           FLAVORS: default,node22,node24,node26
         run: |
           for flavor in ${FLAVORS//,/ }; do
@@ -135,8 +127,8 @@ jobs:
           cat "$RUNNER_TEMP/size.md" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Comment the size on the pull request
-        if: ${{ (github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository) && github.actor != 'dependabot[bot]' }}
+        if: ${{ github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]' }}
         env:
           GH_TOKEN: ${{ github.token }}
-          PULL_REQUEST: ${{ github.event.pull_request.number || inputs.pull-request }}
+          PULL_REQUEST: ${{ github.event.pull_request.number }}
         run: gh pr comment "$PULL_REQUEST" --body-file "$RUNNER_TEMP/size.md" --edit-last --create-if-none
