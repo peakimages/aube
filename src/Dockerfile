@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # Set by scripts/check-upstream.sh
-ARG AUBE_VERSION=2.10.1
+ARG AUBE_VERSION=2.11.0
 
 # Dependencies
 # https://hub.docker.com/_/alpine/tags?name=3.24.4

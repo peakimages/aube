@@ -1,18 +1,18 @@
 {
 	"aube": {
 		"latest": {
-			"version": "2.10.1",
-			"commit": "429af5d24c98789e396db75724907f6a08fda2a6",
+			"version": "2.11.0",
+			"commit": "083c8d28179d9698c5686e4c23af24ca994f9d17",
 			"platforms": {
 				"linux/amd64": {
-					"url": "https://github.com/aubepkg/aube/releases/download/v2.10.1/aube-v2.10.1-x86_64-unknown-linux-musl.tar.gz",
-					"size": 25594240,
-					"sha256": "00a0bc98003aa1d3b091f08036bb218e26149aed8d02064cf41984f53a4187db"
+					"url": "https://github.com/aubepkg/aube/releases/download/v2.11.0/aube-v2.11.0-x86_64-unknown-linux-musl.tar.gz",
+					"size": 25937706,
+					"sha256": "d6f5174431ace30275ec76887fe28dbf7c4b295e7b621d9706015ed47636c442"
 				},
 				"linux/arm64": {
-					"url": "https://github.com/aubepkg/aube/releases/download/v2.10.1/aube-v2.10.1-aarch64-unknown-linux-musl.tar.gz",
-					"size": 25386103,
-					"sha256": "c437e0c446652a32ac367b81c469f0b5aa0a3bee734c7948c18d11f568365db0"
+					"url": "https://github.com/aubepkg/aube/releases/download/v2.11.0/aube-v2.11.0-aarch64-unknown-linux-musl.tar.gz",
+					"size": 25722563,
+					"sha256": "2c68858afe1c382e3067259f7a171c4f4fae8d56bd5731c6b1c5b463a0a0e57a"
 				}
 			}
 		}

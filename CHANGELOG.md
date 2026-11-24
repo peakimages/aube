@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [v2.11.0-v0.1.0] - 2026-11-24
+
+### Changed
+
+- aube from v2.10.1 to v2.11.0, see its [release notes](https://github.com/aubepkg/aube/releases/tag/v2.11.0)
+
 ## [v2.10.1-v0.1.0] - 2026-11-17
 
 ### Changed
